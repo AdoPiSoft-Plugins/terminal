@@ -80,7 +80,7 @@
           $scope.abortCommands()
         }
       });
-    }, 4000)
+    }, 2000)
 
     var socket = Socket.getSocket();
     $scope.info = ""

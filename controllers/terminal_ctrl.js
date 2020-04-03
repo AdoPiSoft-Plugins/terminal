@@ -29,7 +29,7 @@ exports.runCommand = async(req, res, next)=>{
       session.command_queue.push(command)
 
     if (!running_command){
-      var done = ()=>{
+      var done = async()=>{
         try{
           await running_command.kill()
         }catch(e){}
