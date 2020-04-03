@@ -30,6 +30,9 @@ exports.runCommand = async(req, res, next)=>{
 
     if (!running_command){
       var done = ()=>{
+        try{
+          await running_command.kill()
+        }catch(e){}
         running_command = null
         shell.exec("echo $(pwd)", (e, o)=>{
           admin_socket.emitAdmin('command:done', o)
@@ -44,7 +47,6 @@ exports.runCommand = async(req, res, next)=>{
       }
       while(session.command_queue.length > 0){
         if(running_command) continue;
-        running_command = null
         command = session.command_queue.splice(0, 1)[0]
         var c_split = command.split(" ")
         var fn = shell[c_split[0]]
@@ -72,6 +74,9 @@ exports.runCommand = async(req, res, next)=>{
       try{
         await running_command.stdin.write(command)
       }catch(e){
+        try{
+          await running_command.kill()
+        }catch(e){}
         running_command = null
       }
     }
