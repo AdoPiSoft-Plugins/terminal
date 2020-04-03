@@ -12,9 +12,14 @@ async function killCommand(command){
   if(!command) return
   try{
     await command.kill()
-    command.stdin.destroy()
-    command.stdout.destroy()
   }catch(e){}
+
+  setTimout(async ()=>{
+    try{
+      await command.stdout.destroy()
+      await command.stdin.destroy()
+    }catch(e){}
+  }, 1000)
 }
 
 exports.get = async(req, res, next)=>{
