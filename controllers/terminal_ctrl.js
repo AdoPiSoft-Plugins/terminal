@@ -9,7 +9,7 @@ var shell = require('shelljs')
 var running_command
 exports.get = async(req, res, next)=>{
   try{
-    shell.cd("~/")
+    shell.cd("/home/pi")
     shell.exec("echo $(pwd)", (e, o)=>{
       res.json({
         info: o,
@@ -31,7 +31,7 @@ exports.runCommand = async(req, res, next)=>{
     if (!running_command){
       var done = async()=>{
         try{
-          await running_command.kill()
+          await running_command.kill('SIGINT')
         }catch(e){}
         running_command = null
         shell.exec("echo $(pwd)", (e, o)=>{
@@ -75,7 +75,7 @@ exports.runCommand = async(req, res, next)=>{
         await running_command.stdin.write(command)
       }catch(e){
         try{
-          await running_command.kill()
+          await running_command.kill('SIGINT')
         }catch(e){}
         running_command = null
       }
@@ -91,7 +91,7 @@ exports.abortCommands = async(req, res, next)=>{
   try{
     session.command_queue = []
     if(running_command){
-      await running_command.kill()
+      await running_command.kill('SIGINT')
       running_command = null
     }
     shell.exec("echo $(pwd)", (e, o)=>{
