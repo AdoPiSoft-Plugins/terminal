@@ -9,7 +9,7 @@ var shell = require('shelljs')
 var running_command
 exports.get = async(req, res, next)=>{
   try{
-    shell.cd("/home/pi")
+    shell.cd("~/")
     shell.exec("echo $(pwd)", (e, o)=>{
       res.json({
         info: o,
