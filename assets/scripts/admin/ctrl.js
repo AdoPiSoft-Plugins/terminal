@@ -24,11 +24,14 @@
     }
     $timeout(function(){
       term = new Terminal();
-      window.term = term
+      var fitAddon = new FitAddon.FitAddon();
+      var webLinksAddon = new WebLinksAddon.WebLinksAddon();
       var el = document.getElementById('terminal')
       el.innerText = ""
+      term.loadAddon(fitAddon);
+      term.loadAddon(webLinksAddon);
       term.open(el);
-
+      fitAddon.fit();
       term.prompt = function(){
         input_ready = true
         command = ""
@@ -39,7 +42,12 @@
         printOutput(o)
       })
       term.prompt()
-
+      term.onData(function(d, e){
+        if(!d || d.length <= 5) return false
+        command += d
+        term.write(d);
+        return false
+      })
       term.onKey(function(e){
         if(!input_ready) return
         if(e.domEvent.keyCode == 9) return //tab
@@ -73,7 +81,7 @@
             command += text
             term.write(text)
           })
-        } else if (printable) {
+        }else if (printable) {
           command += e.key
           term.write(e.key);
         }else if(e.domEvent.keyCode == 67 && e.domEvent.ctrlKey){ // ctrl+c

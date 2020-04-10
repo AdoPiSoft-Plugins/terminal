@@ -5,6 +5,7 @@ var core = require('../../core')
 var path = require("path")
 var { admin_socket } = core
 var shell = require('shelljs')
+var blocked_commands = ['nano', 'vi', 'vim', 'exit']
 
 var running_command
 
@@ -34,7 +35,13 @@ exports.get = async(req, res, next)=>{
 exports.runCommand = async(req, res, next)=>{
   var { command } = req.body
   try{
-    command = (command||"").replace(/sudo|exit/g, "").trim()
+    command = (command||"").replace(/sudo/g, "").trim()
+
+    if(command.match(new RegExp(`${blocked_commands.join("|")}`, "g"))){
+      admin_socket.emitAdmin('terminal:output', `${command}: command not supported\n`)
+      return res.json({})
+    }
+
     if(command)
       session.command_queue.push(command)
 
