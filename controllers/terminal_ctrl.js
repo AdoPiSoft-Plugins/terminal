@@ -5,7 +5,7 @@ var core = require('../../core')
 var path = require("path")
 var { admin_socket } = core
 var shell = require('shelljs')
-var blocked_commands = ['nano', 'vi', 'vim', 'exit']
+var blocked_commands = ['nano', 'vi', 'vim', 'exit', 'telnet']
 
 var running_command
 
@@ -39,6 +39,7 @@ exports.runCommand = async(req, res, next)=>{
 
     if(command.match(new RegExp(`${blocked_commands.join("|")}`, "g"))){
       admin_socket.emitAdmin('terminal:output', `${command}: command not supported\n`)
+      admin_socket.emitAdmin('command:done')
       return res.json({})
     }
 
@@ -78,6 +79,7 @@ exports.runCommand = async(req, res, next)=>{
           if(command == 'clear'){
             session.outputs = []
             admin_socket.emitAdmin("terminal:clear")
+            admin_socket.emitAdmin('command:done')
           }else{
             running_command = shell.exec(command, {async:true})
             running_command.stdout.on('data', cb)

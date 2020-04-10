@@ -6,7 +6,8 @@
     var term
     var command = ""
     var history = []
-    var cur_index
+    var history_i
+    var cursor_i = -1
     var input_ready = false
     function printOutput(o){
       o = o.split("\n")//.map(function(i){ return i.trim() })
@@ -35,6 +36,7 @@
       term.prompt = function(){
         input_ready = true
         command = ""
+        cursor_i = -1
         term.write('\r\n'+$scope.info+'$ ');
       };
 
@@ -49,13 +51,18 @@
         return false
       })
       term.onKey(function(e){
+
+        if(e.domEvent.keyCode == 67 && e.domEvent.ctrlKey){ // ctrl+c
+          $scope.abortCommands()
+        }
+
         if(!input_ready) return
         if(e.domEvent.keyCode == 9) return //tab
         var printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey;
         if (e.domEvent.keyCode === 13) {
           $scope.runCommand(command)
           command = ""
-          term.prompt();
+          // term.prompt();
         } else if (e.domEvent.keyCode === 8) {
           // Do not delete the prompt
           if (term._core.buffer.x > $scope.info.length+2) {
@@ -63,29 +70,36 @@
             command = command.substr(0, command.length-1)
           }
         }else if(e.domEvent.keyCode == 38){ //arrow-up
-          if(isNaN(cur_index) || cur_index < 0){
-            cur_index = history.length -1
+          if(isNaN(history_i) || history_i < 0){
+            history_i = history.length -1
           }else{
-            cur_index -= 1
+            history_i -= 1
           }
-          navigateHistory(cur_index)
+          navigateHistory(history_i)
         }else if(e.domEvent.keyCode == 40){ //arrow-down
-          if(isNaN(cur_index) || cur_index < 0 || cur_index >= history.length){
-            cur_index = 0
+          if(isNaN(history_i) || history_i < 0 || history_i >= history.length){
+            history_i = 0
           }else{
-            cur_index += 1
+            history_i += 1
           }
-          navigateHistory(cur_index)
+          navigateHistory(history_i)
         }else if(e.domEvent.keyCode == 86 && e.domEvent.ctrlKey){
-          navigator.clipboard.readText().then(function(text){
-            command += text
-            term.write(text)
-          })
+          // navigator.clipboard.readText().then(function(text){
+          //   command += text
+          //   term.write(text)
+          // })
         }else if (printable) {
-          command += e.key
-          term.write(e.key);
-        }else if(e.domEvent.keyCode == 67 && e.domEvent.ctrlKey){ // ctrl+c
-          $scope.abortCommands()
+          if(e.key.length == 1){
+            command += e.key
+            cursor_i = command.length-1
+            term.write(e.key);
+          }else if(e.domEvent.code == "ArrowLeft" && cursor_i > 0){
+            // cursor_i -= 1
+            // term.write(e.key);
+          }else if(e.domEvent.code == "ArrowRight" && cursor_i < command.length-1){
+            // cursor_i += 1
+            // term.write(e.key);
+          }
         }
       });
     }, 2000)
@@ -119,7 +133,7 @@
       input_ready = false
       TerminalPluginService.runCommand(command)
       history.push(command)
-      cur_index = null
+      history_i = null
     }
     $scope.abortCommands = function(){
       TerminalPluginService.abortCommands()
