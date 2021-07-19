@@ -1,6 +1,4 @@
-'use strict'
-
-var core = require('../core')
+var core = require('plugin-core')
 var { router, middlewares } = core
 var { express, bodyParser } = middlewares
 var terminal_ctrl = require('./controllers/terminal_ctrl')
