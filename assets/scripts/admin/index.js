@@ -4,7 +4,7 @@
   .config(function($stateProvider) {
     $stateProvider
     .state('plugins.terminal', {
-      templateUrl : "/plugins/terminal/views/index.html",
+      templateUrl : "/public/plugins/terminal/views/index.html",
       controller: 'TerminalPluginCtrl',
       url: '/terminal',
       title: 'Terminal',
