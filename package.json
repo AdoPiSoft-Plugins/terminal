@@ -3,20 +3,21 @@
   "version": "1.1.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "python $APPDIR/python-scripts/plugin-postinstall.py $(basename $(pwd)) $(pwd)"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AdoPiSoft-Plugins/terminal.git"
-  },
-  "author": "",
+  "repository": "git@github.com:AdoPiSoft-Plugins/terminal.git",
+  "author": "arnel lenteria",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AdoPiSoft-Plugins/terminal/issues"
+  "metadata": {
+    "admin": {
+      "navigation": [
+        {
+          "parentstate": "plugins",
+          "icon": "fa fa-terminal",
+          "text": "Terminal",
+          "href": "plugins.terminal"
+        }
+      ]
+    }
   },
-  "homepage": "https://github.com/AdoPiSoft-Plugins/terminal#readme",
   "dependencies": {
     "shelljs": "^0.8.3"
   }
